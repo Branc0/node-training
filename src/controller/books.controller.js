@@ -2,13 +2,19 @@ import books from "../models/Book.js";
 
 class BookController {
   static getAllBooks = async (req, res) => {
-    const booksCollection = await books.find();
+    const title = req.query.title;
+    let booksCollection;
+    if (title) {
+      booksCollection = await books.find({ title }).populate("author");
+    } else {
+      booksCollection = await books.find().populate("author");
+    }
     res.status(200).json(booksCollection);
   };
 
   static findBook = async (req, res) => {
     const id = req.params.id;
-    const book = await books.findById(id);
+    const book = await books.findById(id).populate("author", "name");
     if (!book) {
       res.status(500).send({ message: `${book}` });
     } else {
@@ -29,8 +35,8 @@ class BookController {
   static updateBook = async (req, res) => {
     const id = req.params.id;
     const dbResult = await books.findByIdAndUpdate(id, { $set: req.body });
-    if (dbResult.errors) {
-      res.status(500).send({ message: `${dbRes.errors.message}` });
+    if (!dbResult) {
+      res.status(500).send({ message: `${dbRes}` });
     } else {
       res.status(200).send({ message: "updated successfully" });
     }
