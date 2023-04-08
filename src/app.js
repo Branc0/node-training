@@ -1,5 +1,6 @@
 import express from "express";
 import db from "./config/dbConnect.js";
+import books from "./models/Book.js";
 
 db.on("error", () => {
   console.log.bind(console, "Error while trying to connect into database");
@@ -11,25 +12,16 @@ db.once("open", () => {
 const app = express();
 app.use(express.json());
 
-const books = [
-  {
-    id: 1,
-    title: "lord of the rings",
-  },
-];
-
 app.get("/", (req, res) => {
   res.status(200).send("Curso de Node");
 });
 
-app.get("/books", (req, res) => {
-  res.status(200).json(books);
+app.get("/books", async (req, res) => {
+  const booksColection = await books.find();
+  res.status(200).json(booksColection);
 });
 
 app.post("/books", (req, res) => {
-  if (req.body) {
-    books.push(req.body);
-  }
   res.status(201).json(books);
 });
 
