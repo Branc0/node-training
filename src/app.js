@@ -1,6 +1,7 @@
 import express from "express";
 
 const app = express();
+app.use(express.json());
 
 const books = [
   {
@@ -15,6 +16,13 @@ app.get("/", (req, res) => {
 
 app.get("/books", (req, res) => {
   res.status(200).json(books);
+});
+
+app.post("/books", (req, res) => {
+  if (req.body) {
+    books.push(req.body);
+  }
+  res.status(201).json(books);
 });
 
 export default app;
