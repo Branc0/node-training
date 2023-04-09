@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-mongoose.connect(
-  "mongodb+srv://rrochadeazevedo:123@cluster0.lxserh9.mongodb.net/node-library"
-);
+mongoose.connect(process.env.STRING_CONEXAO_DB);
 
 const db = mongoose.connection;
 
