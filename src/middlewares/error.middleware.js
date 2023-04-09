@@ -1,17 +1,15 @@
 import mongoose from 'mongoose';
+import BaseError from '../Errors/BaseError.js';
+import ValidationError from '../Errors/ValidationError.js';
+import FormatError from '../Errors/FormatError.js';
 
 function errorHandler(err, req, res, next) {
   if (err instanceof mongoose.Error.CastError) {
-    res.status(400).send({ message: 'Incorrect data' });
+    new FormatError().sendResponse(res);
   } else if (err instanceof mongoose.Error.ValidationError) {
-    const errorMessages = Object.values(err.errors)
-      .map((error) => error.message)
-      .join('; ');
-    res.status(400).send({
-      message: `Validation error: ${errorMessages}`,
-    });
+    new ValidationError(err).sendResponse(res);
   } else {
-    res.status(500).send({ message: 'Internal server error' });
+    new BaseError().sendResponse(res);
   }
 }
 
