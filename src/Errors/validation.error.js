@@ -1,4 +1,4 @@
-import BaseError from './BaseError.js';
+import BaseError from './base.error.js';
 
 class ValidationError extends BaseError {
   constructor(err) {

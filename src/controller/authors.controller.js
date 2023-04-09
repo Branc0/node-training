@@ -1,3 +1,4 @@
+import NotFoundError from '../Errors/not-found.error.js';
 import Authors from '../models/Author.js';
 
 class authorController {
@@ -14,10 +15,10 @@ class authorController {
     try {
       const id = req.params.id;
       const author = await Authors.findById(id);
-      if (!author) {
-        res.status(404).send({message: `Author not found`});
-      } else {
+      if (author) {
         res.status(200).send(author);
+      } else {
+        next(new NotFoundError());
       }
     } catch (error) {
       next(error);
