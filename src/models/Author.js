@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const authorSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  nationality: { type: String },
+  name: {type: String, required: true},
+  nationality: {type: String},
 });
 
-const author = mongoose.model("authors", authorSchema);
+const author = mongoose.model('authors', authorSchema);
 
 export default author;
