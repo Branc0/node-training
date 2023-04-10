@@ -1,16 +1,18 @@
 import Books from '../models/Book.js';
+import Authors from '../models/Author.js';
+import NotFoundError from '../Errors/not-found.error.js';
 
 class BookController {
   static getAllBooks = async (req, res, next) => {
     try {
-      const title = req.query.title;
-      let booksCollection;
-      if (title) {
-        booksCollection = await Books.find({title}).populate('author');
+      const search = await populateSearch(req.query);
+
+      if (search.author === null) {
+        res.status(200).send([]);
       } else {
-        booksCollection = await Books.find().populate('author');
+        const booksCollection = await Books.find(search).populate('author');
+        res.status(200).json(booksCollection);
       }
-      res.status(200).json(booksCollection);
     } catch (error) {
       next(error);
     }
@@ -71,6 +73,17 @@ class BookController {
       next(error);
     }
   };
+}
+
+async function populateSearch({title, editor, author}) {
+  const search = {};
+  if (title) search.title = {$regex: title, $options: 'i'};
+  if (editor) search.editor = {$regex: editor, $options: 'i'};
+  if (author) {
+    const resAuthor = await Authors.findOne({name: author});
+    search.author = resAuthor?._id ?? null;
+  }
+  return search;
 }
 
 export default BookController;
