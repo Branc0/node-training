@@ -1,17 +1,26 @@
 import Books from '../models/Book.js';
 import Authors from '../models/Author.js';
 import NotFoundError from '../Errors/not-found.error.js';
+import FormatError from '../Errors/format.error.js';
 
 class BookController {
   static getAllBooks = async (req, res, next) => {
     try {
       const search = await populateSearch(req.query);
+      const {limit = 10, page = 1} = req.query;
 
       if (search.author === null) {
         res.status(200).send([]);
       } else {
-        const booksCollection = await Books.find(search).populate('author');
-        res.status(200).json(booksCollection);
+        if (limit > 0 && page > 0) {
+          const booksCollection = await Books.find(search)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate('author');
+          res.status(200).json(booksCollection);
+        } else {
+          next(new FormatError());
+        }
       }
     } catch (error) {
       next(error);
